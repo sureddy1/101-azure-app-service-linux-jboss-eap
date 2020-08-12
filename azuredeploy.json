@@ -1,0 +1,102 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "sku": {
+            "type": "string",
+            "defaultValue": "PremiumV2"
+        },
+        "skuCode": {
+            "type": "string",
+            "defaultValue": "P1v2"
+        },
+        "workerSize": {
+            "type": "string",
+            "defaultValue": "3"
+        },
+        "workerSizeId": {
+            "type": "string",
+            "defaultValue": "3"
+        },
+        "numberOfWorkers": {
+            "type": "string",
+            "defaultValue": "1"
+        },
+        "siteName": {
+            "type": "string",
+            "defaultValue": "[concat('webapp-', uniqueString(resourceGroup().name))]",
+            "metadata": {
+                "description": "The unique name of your Web Site."
+            }
+        },
+        "location": {
+            "type": "string",
+            "defaultValue": "[resourceGroup().location]",
+            "metadata": {
+                "description": "Location for all resources."
+            }
+        }
+    },
+    "variables": {
+        "hostingPlanName": "[concat('asp-',  uniqueString(resourceGroup().id))]"
+    },
+    "resources": [
+        {
+            "type": "Microsoft.Web/serverfarms",
+            "apiVersion": "2019-08-01",
+            "name": "[variables('hostingPlanName')]",
+            "location": "[parameters('location')]",
+            "properties": {
+                "name": "[variables('hostingPlanName')]",
+                "workerSize": "[parameters('workerSize')]",
+                "workerSizeId": "[parameters('workerSizeId')]",
+                "numberOfWorkers": "[parameters('numberOfWorkers')]",
+                "reserved": true
+            },
+            "sku": {
+                "Tier": "[parameters('sku')]",
+                "Name": "[parameters('skuCode')]"
+            },
+            "kind": "linux"
+        },
+        {
+            "type": "Microsoft.Web/sites",
+            "apiVersion": "2019-08-01",
+            "name": "[parameters('siteName')]",
+            "location": "[parameters('location')]",
+            "dependsOn": [
+                "[variables('hostingPlanName')]"
+            ],
+            "kind": "app,linux,container",
+            "properties": {
+                "name": "[parameters('siteName')]",
+                "clientAffinityEnabled": true,
+                "httpsOnly": true,
+                "serverFarmId": "[variables('hostingPlanName')]",
+                "reserved": true,
+                "siteConfig":
+                {
+                    "alwaysOn": true,
+                    "appSettings": [
+                        {
+                            "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
+                            "value": "true"
+                        },                 
+                        {
+                            "name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
+                            "value": "7"
+                        }
+                    ],
+                    "linuxFxVersion": "DOCKER|mcr.microsoft.com/azure-app-service/jbosseap:7.2-java8_000000000000",
+                    "httpLoggingEnabled": true,
+                    "logsDirectorySizeLimit": 35,
+                    "minTlsVersion": "1.2",
+                    "ftpsState": "AllAllowed"
+
+                }
+            }
+        }  
+    ]
+}
+    
+
