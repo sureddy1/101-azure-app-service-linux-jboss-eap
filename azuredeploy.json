@@ -81,7 +81,11 @@
                         {
                             "name": "WEBSITES_ENABLE_APP_SERVICE_STORAGE",
                             "value": "true"
-                        },                 
+                        },
+                        {
+                            "name": "WEBSITES_CONTAINER_START_TIME_LIMIT",
+                            "value": "600"
+                        },
                         {
                             "name": "WEBSITE_HTTPLOGGING_RETENTION_DAYS",
                             "value": "7"
