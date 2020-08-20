@@ -7,7 +7,7 @@
 
 This template allows you to deploy JBoss EAP on Web App for Container. These are the features:
 
-- Built based Redhat JBoss EAP server.
+- Built based on Redhat JBoss EAP server.
 - Runs in standalone mode.
 - SSH enabled.
 - Runs JBoss 7.2
